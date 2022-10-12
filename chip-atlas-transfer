@@ -55,7 +55,7 @@ EOS
 
 transfer() {
   cd ${1}
-  ${MC_BIN_PATH} mirror --overwrite . ${MINIO_ALIAS}/${MINIO_BUCKET_NAME}
+  ${MC_BIN_PATH} mirror --remove --overwrite . ${MINIO_ALIAS}/${MINIO_BUCKET_NAME}
 }
 
 main() {
