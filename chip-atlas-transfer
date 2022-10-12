@@ -2,8 +2,8 @@
 set -eu
 
 # Secret
-MINIO_ALIAS=https://chip-atlas.dbcls.jp
-MINIO_URL=chip-atlas
+MINIO_ALIAS=chip-atlas
+MINIO_URL=https://chip-atlas.dbcls.jp
 MINIO_BUCKET_NAME=current
 MINIO_ACCESSKEY=
 MINIO_SECRETKEY=
@@ -55,7 +55,7 @@ EOS
 
 transfer() {
   cd ${1}
-  ${MC_BIN_PATH} mirror --recursive --bucket ${MINIO_BUCKET_NAME} .
+  ${MC_BIN_PATH} mirror --overwrite . ${MINIO_ALIAS}/${MINIO_BUCKET_NAME}
 }
 
 main() {
@@ -73,6 +73,7 @@ main() {
         exit 0
         ;;
       clean)
+        echo "Deleting ${MC_DIR} .."
         rm -fr ${MC_DIR}
         exit 0
         ;;
