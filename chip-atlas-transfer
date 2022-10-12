@@ -1,0 +1,91 @@
+#!/bin/bash
+set -eu
+
+# Secret
+MINIO_ALIAS=https://chip-atlas.dbcls.jp
+MINIO_URL=chip-atlas
+MINIO_BUCKET_NAME=current
+MINIO_ACCESSKEY=
+MINIO_SECRETKEY=
+
+# Variables
+MC_BIN_URL="https://dl.min.io/client/mc/release/linux-amd64/mc"
+MC_BIN_PATH="$(which mc 2>/dev/null ||:)"
+MC_DIR="${HOME}/.mc"
+MC_BIN_DIR="${MC_DIR}/bin"
+
+WORKDIR="$( cd "$( dirname "$0" )" && pwd -P)"
+
+# Functions
+check_and_install_mc() {
+  if [[ -z ${MC_BIN_PATH} ]]; then
+    MC_BIN_PATH="${MC_BIN_DIR}/mc"
+    if [[ ! -e ${MC_BIN_PATH} ]]; then
+      echo "mc command not found: installing at ${MC_BIN_DIR} .." 1>&2
+      mkdir -p ${MC_BIN_DIR}
+      cd ${MC_BIN_DIR}
+      curl -s ${MC_BIN_URL} > ${MC_BIN_PATH}
+      chmod +x ${MC_BIN_PATH}
+    fi
+  fi
+  echo "mc command at ${MC_BIN_PATH} .." 1>&2
+}
+
+set_minio_alias() {
+  no_alias=$(${MC_BIN_PATH} alias ls ${MINIO_ALIAS} 2>&1 | grep ERROR ||:)
+  if [[ ! -z ${no_alias} ]]; then
+    echo "Setting minio alias.." 1>&2
+    ${MC_BIN_PATH} alias set ${MINIO_ALIAS} ${MINIO_URL} ${MINIO_ACCESSKEY} ${MINIO_SECRETKEY}
+  fi
+}
+
+version() {
+  echo "chip-atlas-transfer: 0.1.0"
+}
+  
+help() {
+  cat <<EOS 2>&1
+$(version)
+Usage:
+  chip-atlas-transfer <directory>
+  chip-atlas-transfer help
+  chip-atlas-transfer clean
+EOS
+}
+
+transfer() {
+  cd ${1}
+  ${MC_BIN_PATH} mirror --recursive --bucket ${MINIO_BUCKET_NAME} .
+}
+
+main() {
+  if [[ $# -eq 0 ]]; then
+    help
+    exit 1
+  else
+    check_and_install_mc
+    set_minio_alias
+    
+    case ${1} in
+      help|--help|-h)
+        help
+        exit 0
+        ;;
+      clean)
+        rm -fr ${MC_DIR}
+        exit 0
+        ;;
+    esac
+    
+    if [[ -d ${1} ]]; then
+      transfer ${1}
+    else
+      echo "ERROR: invalid argument" 2>&1
+      help
+      exit 1
+    fi
+  fi
+}
+
+# Run
+main $@
