@@ -55,7 +55,7 @@ EOS
 
 transfer() {
   cd ${1}
-  ${MC_BIN_PATH} mirror --remove --overwrite . ${MINIO_ALIAS}/${MINIO_BUCKET_NAME}
+  ${MC_BIN_PATH} mirror --remove --overwrite . ${MINIO_ALIAS}/${MINIO_BUCKET_NAME}/${2}
 }
 
 main() {
@@ -80,7 +80,7 @@ main() {
     esac
     
     if [[ -d ${1} ]]; then
-      transfer ${1}
+      transfer ${1} ${2}
     else
       echo "ERROR: invalid argument" 2>&1
       help
