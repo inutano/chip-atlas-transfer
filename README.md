@@ -8,9 +8,13 @@ For data transfer via MinIO client
 $ ./chip-atlas-transfer
 chip-atlas-transfer: 0.1.0
 Usage:
-  chip-atlas-transfer <directory>
+  chip-atlas-transfer <source_directory> <target_path>
   chip-atlas-transfer help
   chip-atlas-transfer clean
+```
+
+```
+$ chip-atlas-transfer ~/data/tmp/hg19/allPeaks_light hg19/allPeaks_light_2022
 ```
 
 ## Tips
