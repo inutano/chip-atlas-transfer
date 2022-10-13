@@ -4,7 +4,7 @@ set -eu
 # Secret
 MINIO_ALIAS=chip-atlas
 MINIO_URL=https://chip-atlas.dbcls.jp
-MINIO_BUCKET_NAME=current
+MINIO_BUCKET_NAME=data
 MINIO_ACCESSKEY=
 MINIO_SECRETKEY=
 
